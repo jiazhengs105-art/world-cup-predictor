@@ -419,9 +419,10 @@ Edge_Score = (P_model − P_market) × Odds
 
 ```
 world-cup-predictor/
-├── skill.md                    # 模型主文件（13 章完整规范）
+├── skill.md                    # Claude Code 专用（13章完整逻辑，一键触发）
+├── standalone_calculator.md    # 🆕 通用版（DeepSeek/ChatGPT/Kimi/Excel 通用）
 ├── README.md                   # 本文件
-└── references/
+└── references/                 # 离线参考数据
     ├── team_elo_baseline.md    # 48 队 Elo 基线 + 联合会修正表
     ├── venue_table.md          # 16 个场地海拔/气温/湿度/草皮数据
     └── formula_quickref.md     # 公式速查卡
@@ -431,25 +432,55 @@ world-cup-predictor/
 
 ## 使用方法
 
-### 作为 Claude Code Skill 使用
+### 方式一：Claude Code 用户（全程自动）
+
+```bash
+# 1. 下载整个文件夹，放到 Claude Code 的 skills 目录
+cp -r world-cup-predictor ~/.claude/skills/
+
+# 2. 重启 Claude Code，输入触发词即可
+```
 
 ```
-用户：荷兰vs日本 1.86 3.38 3.38 瑞典vs突尼斯 1.69 3.30 4.26
+用户：荷兰vs日本 1.86 3.38 3.38
 ```
 
-模型自动执行：
+模型自动搜索最新数据 → 走完整条计算链路 → 输出概率表和下注建议。全程无须手动准备数据。
 
-1. **结构化数据采集**：Elo、德转身价、近 10 场战绩、场地环境、伤病——5 步必选搜索
-2. **定性情报采集**：教练战术风格、战术克制关系、球队氛围、裁判尺度——4 步必选搜索
-3. **多语言搜索**：日语、瑞典语、阿拉伯语等母语媒体——非英语球队必选
-4. **全链路计算**：True Elo → 多源合成 → λ/μ → 环境修正 → Dixon-Coles → 行为金融 → 定性修正 → Edge Score → Kelly
-5. **输出**：完整概率表 + Edge Score + 建议仓位 + 残差警告
+---
 
-### 环境要求
+### 方式二：没有 Claude Code？用任何 AI 都能跑
 
-- Claude Code（AI 编程助手）
-- 网络搜索能力（模型依赖实时 WebSearch 获取 Elo、身价、伤病、战术情报）
-- 无外部 API 依赖（所有计算在模型内部完成）
+**适用：DeepSeek、ChatGPT、Kimi、豆包、通义千问等任何大模型。**
+
+1. 自己搜好两队数据（Elo、近20场进球失球、近10场战绩、核心缺阵、场地信息）——5 分钟
+2. 打开 `standalone_calculator.md`，**全选复制**（包含全部 14 步公式和参数）
+3. 粘贴给 AI，附上比赛信息，例如：
+
+```
+请严格按照以下公式计算 荷兰 vs 日本 的胜平负概率。
+
+荷兰：原始Elo≈1920，联合会UEFA，近20场场均进球2.40/失球0.70，
+      近10场PPG=2.10，对手均Elo≈1686，身价€7.54亿，5大联赛78%，
+      核心缺阵：Timber(€70M)、Simons(ACL)
+日本：原始Elo≈1900，联合会AFC，近20场场均进球2.80/失球0.30，
+      近10场PPG=2.60，对手均Elo≈1550，身价€2.71亿，5大联赛45%，
+      核心缺阵：三笘薰、远藤航(退役)、南野拓実
+赔率：胜1.86 / 平3.38 / 负3.38
+场地：达拉斯AT&T Stadium，海拔150m，气温29°C，湿度65%
+
+{粘贴 standalone_calculator.md 全部内容}
+```
+
+4. AI 自动输出胜平负概率、Edge Score、建议仓位。
+
+**也可以用 Excel 手算**——`standalone_calculator.md` 里的每一步都是纯公式，没有黑箱。
+
+---
+
+### 方式三：直接用 Claude Code（完整版，含搜索能力）
+
+已安装 Claude Code 的用户，方式一就是完整版——模型会自动上网搜索最新 Elo、身价、伤病、战术分析，无需手动准备任何数据。
 
 ---
 
